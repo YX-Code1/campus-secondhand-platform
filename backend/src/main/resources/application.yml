@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: campus-trade
+  datasource:
+    url: jdbc:mysql://localhost:3306/campus_trade?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.campus.trade.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+app:
+  jwt:
+    secret: DB2026-RA-V1.0-Campus-Secondhand-Trade-Secret-Key-256bits!!
+    expiration-ms: 86400000
+  upload:
+    dir: d:/usually/JAVA/campus-secondhand/backend/uploads
+  sensitive-words:
+    - 违禁
+    - 赌博
+    - 毒品
+
+logging:
+  level:
+    com.campus.trade: INFO
+  file:
+    name: logs/campus-trade.log
