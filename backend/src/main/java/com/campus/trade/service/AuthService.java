@@ -26,7 +26,6 @@ public class AuthService {
     private JwtUtil jwtUtil;
 
     @Transactional
-    //接受前端数据
     public void register(RegisterRequest req) {
         Long count = userMapper.selectCount(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, req.getUsername()));
@@ -58,18 +57,8 @@ public class AuthService {
         }
         //产生token响应给前端
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
-        return new LoginResponse(token, toVO(user));
+        return new LoginResponse(token, UserService.toVO(user));
     }
 
-    public UserVO toVO(User user) {
-        UserVO vo = new UserVO();
-        vo.setId(user.getId());
-        vo.setUsername(user.getUsername());
-        vo.setRealName(user.getRealName());
-        vo.setPhone(CryptoUtil.decrypt(user.getPhone()));
-        vo.setEmail(user.getEmail());
-        vo.setRole(user.getRole());
-        vo.setStatus(user.getStatus());
-        return vo;
-    }
+
 }

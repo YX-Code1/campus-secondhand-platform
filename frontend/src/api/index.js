@@ -8,7 +8,6 @@ export const authApi = {
 }
 
 export const userApi = {
-  //访问/profile时，映射后端的/users/me
   me: () => request.get('/users/me'),
   updateMe: data => request.put('/users/me', data),
   brief: id => request.get(`/users/${id}/brief`)

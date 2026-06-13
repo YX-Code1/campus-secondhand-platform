@@ -49,7 +49,7 @@ const avatarText = computed(() => (form.realName || form.username || '?').charAt
 
 
 onMounted(async () => {
-  //Api调用
+  //加载个人信息
   const res = await userApi.me()
   Object.assign(form, res.data)
 })

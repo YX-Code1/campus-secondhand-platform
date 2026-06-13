@@ -18,15 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private AuthService authService;
 
     public UserVO getProfile(Long userId) {
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        return authService.toVO(user);
+        return toVO(user);
     }
 
     public UserBriefVO getBrief(Long userId) {
@@ -52,14 +50,14 @@ public class UserService {
         if (req.getPhone() != null) user.setPhone(CryptoUtil.encrypt(req.getPhone()));
         if (req.getEmail() != null) user.setEmail(req.getEmail());
         userMapper.updateById(user);
-        return authService.toVO(user);
+        return toVO(user);
     }
 
     public PageResult<UserVO> listUsers(int page, int size) {
         Page<User> p = userMapper.selectPage(new Page<>(page, size),
                 new LambdaQueryWrapper<User>().orderByDesc(User::getCreateTime));
         return new PageResult<>(
-                p.getRecords().stream().map(authService::toVO).toList(),
+                p.getRecords().stream().map(UserService::toVO).toList(),
                 p.getTotal(), page, size);
     }
 
@@ -86,5 +84,17 @@ public class UserService {
             throw new BusinessException("不能删除管理员");
         }
         userMapper.deleteById(userId);
+    }
+
+    public static UserVO toVO(User user) {
+        UserVO vo = new UserVO();
+        vo.setId(user.getId());
+        vo.setUsername(user.getUsername());
+        vo.setRealName(user.getRealName());
+        vo.setPhone(CryptoUtil.decrypt(user.getPhone()));
+        vo.setEmail(user.getEmail());
+        vo.setRole(user.getRole());
+        vo.setStatus(user.getStatus());
+        return vo;
     }
 }
