@@ -7,7 +7,7 @@ public final class SecurityUtils {
     private SecurityUtils() {}
 
     public static UserPrincipal currentUser() {
-        //获取到使用的用户信息
+        //获取到认证的用户信息
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         //判断是否存在，然后看获取的信息是否是用户信息
         if (auth != null && auth.getPrincipal() instanceof UserPrincipal p) {
