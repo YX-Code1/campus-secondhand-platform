@@ -62,4 +62,5 @@ public class GlobalExceptionHandler {
         log.error("系统异常", e);
         return Result.fail(500, "系统繁忙，请稍后重试");
     }
+
 }
