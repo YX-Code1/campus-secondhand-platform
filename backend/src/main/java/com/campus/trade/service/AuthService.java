@@ -44,7 +44,6 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest req) {
-        //检验数据库是否存在这个用户信息
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
@@ -59,6 +58,5 @@ public class AuthService {
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
         return new LoginResponse(token, UserService.toVO(user));
     }
-
 
 }

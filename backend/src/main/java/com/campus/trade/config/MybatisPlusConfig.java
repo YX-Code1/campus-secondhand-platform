@@ -22,6 +22,9 @@ public class MybatisPlusConfig {
         return interceptor;
     }
 
+    /*
+    *  自动填充
+    * */
     @Bean
     public MetaObjectHandler metaObjectHandler() {
         return new MetaObjectHandler() {

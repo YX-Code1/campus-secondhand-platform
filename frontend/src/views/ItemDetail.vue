@@ -24,6 +24,7 @@
               <div class="seller-label">发布者</div>
               <div class="seller-name">{{ item.sellerName || '未知用户' }}</div>
               <div class="seller-id">用户 ID：{{ item.sellerId }}</div>
+              <el-tag v-if="sellerRoleText" size="small" type="info" style="margin-top: 4px;">{{ sellerRoleText }}</el-tag>
             </div>
           </div>
           <div class="seller-actions" v-if="!isOwnItem">
@@ -35,14 +36,22 @@
           <el-alert v-else type="info" :closable="false" show-icon title="这是您发布的物品" />
         </el-card>
 
-        <el-button
-          v-if="canBuy"
-          type="primary"
-          size="large"
-          class="buy-btn"
-          :loading="buying"
-          @click="buy"
-        >立即购买</el-button>
+        <div class="action-btns">
+          <el-button
+            v-if="canBuy"
+            type="primary"
+            size="large"
+            :loading="buying"
+            @click="buy"
+          >立即购买</el-button>
+          <el-button
+            v-if="canForceOffShelf"
+            type="danger"
+            size="large"
+            :loading="offShelving"
+            @click="forceOffShelf"
+          >强制下架</el-button>
+        </div>
       </el-col>
     </el-row>
   </el-card>
@@ -51,7 +60,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { itemApi, tradeApi } from '../api'
+import { itemApi, tradeApi, userApi, adminApi } from '../api'
 import { useUserStore } from '../stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {ChatDotRound} from "@element-plus/icons-vue";
@@ -59,8 +68,10 @@ const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
 const item = ref({})
+const sellerBrief = ref(null)
 const loading = ref(false)
 const buying = ref(false)
+const offShelving = ref(false)
 
 const statusText = computed(() => ({
   ON_SALE: '在售', SOLD: '已售出', OFF_SHELF: '已下架', IN_TRADE: '交易中', AUDIT_REJECT: '审核未通过'
@@ -75,13 +86,34 @@ const canBuy = computed(() =>
   !isOwnItem.value
 )
 
+const canForceOffShelf = computed(() =>
+  store.isAdmin &&
+  item.value.status === 'ON_SALE' &&
+  !isOwnItem.value
+)
+
 const sellerInitial = computed(() => (item.value.sellerName || '?').charAt(0).toUpperCase())
+
+const sellerRoleText = computed(() => {
+  if (!sellerBrief.value) return ''
+  const roleMap = { STUDENT: '学生', STAFF: '教职工', ADMIN: '管理员' }
+  return roleMap[sellerBrief.value.role] || sellerBrief.value.role
+})
 
 onMounted(async () => {
   loading.value = true
   try {
     const res = await itemApi.detail(route.params.id)
     item.value = res.data
+    // 加载卖家简要信息
+    if (item.value.sellerId) {
+      try {
+        const briefRes = await userApi.brief(item.value.sellerId)
+        sellerBrief.value = briefRes.data
+      } catch (e) {
+        // 忽略错误，使用默认信息
+      }
+    }
   } finally {
     loading.value = false
   }
@@ -112,6 +144,18 @@ async function buy() {
     buying.value = false
   }
 }
+
+async function forceOffShelf() {
+  await ElMessageBox.confirm('确认强制下架该物品？', '提示', { type: 'warning' })
+  offShelving.value = true
+  try {
+    await adminApi.offShelf(item.value.id)
+    ElMessage.success('物品已下架')
+    item.value.status = 'OFF_SHELF'
+  } finally {
+    offShelving.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -127,5 +171,5 @@ async function buy() {
 .seller-name { font-size: 18px; font-weight: 600; color: #303133; margin: 4px 0; }
 .seller-id { font-size: 12px; color: #c0c4cc; }
 .seller-actions { margin-top: 16px; }
-.buy-btn { margin-top: 12px; }
+.action-btns { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
 </style>

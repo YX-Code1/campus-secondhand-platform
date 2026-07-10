@@ -23,6 +23,9 @@ public class JwtUtil {
         this.expirationMs = expirationMs;
     }
 
+    /*
+    * 用于用户登录产生token
+    * */
     public String generateToken(Long userId, String username, String role) {
         return Jwts.builder()
                 .subject(String.valueOf(userId))
@@ -38,6 +41,9 @@ public class JwtUtil {
                 .compact();
     }
 
+    /*
+    * 解析token，用于解析用户信息
+    * */
     public Claims parse(String token) {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }

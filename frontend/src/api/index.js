@@ -33,6 +33,7 @@ export const itemApi = {
 export const tradeApi = {
   create: itemId => request.post('/trades', { itemId }),
   mine: () => request.get('/trades/mine'),
+  detail: tradeNo => request.get(`/trades/${tradeNo}`),
   updateStatus: (id, status) => request.put(`/trades/${id}/status`, { status })
 }
 

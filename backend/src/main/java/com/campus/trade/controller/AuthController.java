@@ -16,7 +16,6 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    //判断是否符合格式，然后按逻辑在数据库保存数据
     public Result<Void> register(@Valid @RequestBody RegisterRequest req) {
         authService.register(req);
         return Result.ok();

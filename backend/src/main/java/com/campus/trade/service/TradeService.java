@@ -42,6 +42,7 @@ public class TradeService {
         TradeRecord trade = new TradeRecord();
         trade.setTradeNo(generateTradeNo());
         trade.setItemId(itemId);
+        trade.setItemTitle(item.getTitle());
         trade.setBuyerId(buyerId);
         trade.setSellerId(item.getSellerId());
         trade.setAmount(item.getPrice());
@@ -107,8 +108,7 @@ public class TradeService {
         vo.setId(trade.getId());
         vo.setTradeNo(trade.getTradeNo());
         vo.setItemId(trade.getItemId());
-        Item item = itemMapper.selectById(trade.getItemId());
-        if (item != null) vo.setItemTitle(item.getTitle());
+        vo.setItemTitle(trade.getItemTitle());
         vo.setBuyerId(trade.getBuyerId());
         vo.setSellerId(trade.getSellerId());
         User buyer = userMapper.selectById(trade.getBuyerId());

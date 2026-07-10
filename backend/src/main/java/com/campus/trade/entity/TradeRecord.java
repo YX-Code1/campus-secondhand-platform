@@ -14,6 +14,8 @@ public class TradeRecord {
     private String tradeNo;
     @TableField("item_id")
     private Long itemId;
+    @TableField("item_title")
+    private String itemTitle;
     @TableField("buyer_id")
     private Long buyerId;
     @TableField("seller_id")
@@ -31,6 +33,8 @@ public class TradeRecord {
     public void setTradeNo(String tradeNo) { this.tradeNo = tradeNo; }
     public Long getItemId() { return itemId; }
     public void setItemId(Long itemId) { this.itemId = itemId; }
+    public String getItemTitle() { return itemTitle; }
+    public void setItemTitle(String itemTitle) { this.itemTitle = itemTitle; }
     public Long getBuyerId() { return buyerId; }
     public void setBuyerId(Long buyerId) { this.buyerId = buyerId; }
     public Long getSellerId() { return sellerId; }

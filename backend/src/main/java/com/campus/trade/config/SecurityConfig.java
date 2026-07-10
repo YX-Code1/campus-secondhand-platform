@@ -30,8 +30,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                //跨域配置
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                //禁用session，采用token
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //权限控制
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/items", "/items/hot").permitAll()

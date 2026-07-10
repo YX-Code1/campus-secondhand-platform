@@ -9,9 +9,13 @@
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password" type="password" show-password />
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="submit-group">
           <el-button type="primary" :loading="loading" @click="submit">登录</el-button>
-          <el-button link @click="$router.push('/register')">去注册</el-button>
+        </el-form-item>
+        <el-form-item class="link-group">
+          <span class="auth-link" @click="$router.push('/register')">去注册</span>
+          <span class="auth-link-divider">|</span>
+          <span class="auth-link" @click="$router.push('/')">返回首页</span>
         </el-form-item>
       </el-form>
       <el-alert type="info" :closable="false" show-icon>
@@ -62,4 +66,20 @@ async function submit() {
 }
 .auth-card { width: 420px; }
 .auth-card h2 { text-align: center; margin-bottom: 24px; color: #303133; }
+.submit-group { text-align: center; margin-bottom: 0; }
+.link-group { text-align: center; margin-bottom: 0; padding-top: 8px; }
+.auth-link {
+  font-size: 12px;
+  color: #909399;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.auth-link:hover {
+  color: #409eff;
+  text-decoration: underline;
+}
+.auth-link-divider {
+  color: #dcdfe6;
+  margin: 0 12px;
+}
 </style>

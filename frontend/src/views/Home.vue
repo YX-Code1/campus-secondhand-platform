@@ -6,7 +6,7 @@
           <el-input v-model="query.keyword" placeholder="搜索物品" clearable />
         </el-form-item>
         <el-form-item label="类别">
-          <el-select v-model="query.category" clearable placeholder="全部">
+          <el-select v-model="query.category" clearable placeholder="全部" style="width: 120px;">
             <el-option v-for="c in categories" :key="c" :label="c" :value="c" />
           </el-select>
         </el-form-item>

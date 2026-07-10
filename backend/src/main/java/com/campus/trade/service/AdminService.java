@@ -34,6 +34,7 @@ public class AdminService {
         if (cached != null) return cached;
 
         StatsVO stats = new StatsVO();
+        //交易总量
         stats.setTotalTrades(tradeMapper.selectCount(null));
         stats.setCompletedTrades(tradeMapper.selectCount(new LambdaQueryWrapper<TradeRecord>()
                 .eq(TradeRecord::getStatus, "COMPLETED")));

@@ -105,8 +105,10 @@ public class ItemService {
         if (item == null) {
             throw new BusinessException("物品不存在或已下架");
         }
-        item.setViewCount(item.getViewCount() + 1);
-        itemMapper.updateById(item);
+        if (viewerId == null || !viewerId.equals(item.getSellerId())) {
+            item.setViewCount(item.getViewCount() + 1);
+            itemMapper.updateById(item);
+        }
         return toVO(item, viewerId);
     }
 
@@ -136,6 +138,7 @@ public class ItemService {
         }
         if (minPrice != null) wrapper.ge(Item::getPrice, minPrice);
         if (maxPrice != null) wrapper.le(Item::getPrice, maxPrice);
+        //这里能使用page<>(page,size),是因为在拦截器容器添加了mysql分页拦截器
         Page<Item> pageData = itemMapper.selectPage(new Page<>(page, size), wrapper);
         PageResult<ItemVO> result = new PageResult<>(
                 pageData.getRecords().stream().map(i -> toVO(i, viewerId)).toList(),
@@ -202,7 +205,9 @@ public class ItemService {
             vo.setSellerName(seller.getRealName() != null && !seller.getRealName().isBlank()
                     ? seller.getRealName() : seller.getUsername());
         }
+        //权限标记
         vo.setMine(viewerId != null && viewerId.equals(item.getSellerId()));
+
         vo.setStatus(item.getStatus());
         vo.setAuditStatus(item.getAuditStatus());
         vo.setViewCount(item.getViewCount());

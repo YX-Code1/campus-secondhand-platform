@@ -30,6 +30,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="pagination">
+          <el-pagination
+            v-model:current-page="userPage"
+            v-model:page-size="userPageSize"
+            :total="userTotal"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleUserPageSizeChange"
+            @current-change="handleUserPageChange"
+          />
+        </div>
       </el-tab-pane>
       <el-tab-pane label="物品审核" name="audit">
         <el-table :data="auditItems">
@@ -39,7 +50,6 @@
             <template #default="{ row }">
               <el-button size="small" type="success" @click="audit(row.id, 'APPROVED')">通过</el-button>
               <el-button size="small" type="danger" @click="audit(row.id, 'REJECTED')">拒绝</el-button>
-              <el-button size="small" @click="offShelf(row.id)">强制下架</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -65,6 +75,9 @@ const stats = reactive({ totalTrades: 0, completedTrades: 0, totalUsers: 0, pend
 const users = ref([])
 const auditItems = ref([])
 const chartRef = ref()
+const userPage = ref(1)
+const userPageSize = ref(10)
+const userTotal = ref(0)
 
 async function loadStats() {
   const res = await adminApi.stats()
@@ -74,16 +87,28 @@ async function loadStats() {
     const chart = echarts.init(chartRef.value)
     chart.setOption({
       tooltip: {},
-      xAxis: { type: 'category', data: stats.hotItems.map(i => i.title) },
+      xAxis: { type: 'category', data: stats.hotItems.slice(0, 5).map(i => i.title) },
       yAxis: { type: 'value' },
-      series: [{ type: 'bar', data: stats.hotItems.map(i => i.viewCount), itemStyle: { color: '#409eff' } }]
+      series: [{ type: 'bar', data: stats.hotItems.slice(0, 5).map(i => i.viewCount), itemStyle: { color: '#409eff' } }]
     })
   }
 }
 
 async function loadUsers() {
-  const res = await adminApi.users({ page: 1, size: 100 })
-  users.value = res.data.content
+  const res = await adminApi.users({ page: userPage.value, size: userPageSize.value })
+  users.value = res.data.records
+  userTotal.value = res.data.total
+}
+
+function handleUserPageChange(val) {
+  userPage.value = val
+  loadUsers()
+}
+
+function handleUserPageSizeChange(val) {
+  userPageSize.value = val
+  userPage.value = 1
+  loadUsers()
 }
 
 async function loadAudit() {
@@ -111,11 +136,6 @@ async function audit(id, status) {
   loadStats()
 }
 
-async function offShelf(id) {
-  await adminApi.offShelf(id)
-  ElMessage.success('已下架')
-}
-
 async function exportData(type) {
   const res = await fetch(`/api/admin/export/${type}`, {
     headers: { Authorization: `Bearer ${store.token}` }
@@ -140,4 +160,5 @@ onMounted(() => {
 .stats-row { margin-bottom: 20px; }
 .chart-card { margin-bottom: 20px; }
 .chart-card h3 { margin-bottom: 12px; }
+.pagination { margin-top: 20px; text-align: right; }
 </style>
