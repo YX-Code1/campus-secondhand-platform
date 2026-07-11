@@ -53,7 +53,7 @@ public class ChatService {
                 //限制条数，此处agent添加的，防止查太多数据造成数据库压力
                 .last("LIMIT " + Math.min(limit, 200)));
         //加载readflag状态
-        markRead(userId, peerId);
+        markRead(userId, peerId);//test
         //转换为VO再发送给前端
         return list.stream().map(m -> toVO(m, userId)).toList();
     }
